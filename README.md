@@ -4,13 +4,10 @@ A local data engineering pipeline that ingests wildfire detections from the NASA
 
 ## Current stage
 
-**Stage 2: Cleaning and validation =**
+**Stage 3: SQLite load**
 
-- Loads all raw CSVs from `data/raw`
-- Validates required columns and converts types
-- Drops rows with missing critical fields or coordinates outside California
-- Adds a simple intensity bucket based on FRP
-- Includes unit tests
+- Cleans raw data and loads it into a local SQLite database (`data/firms.db`)
+- Includes example SQL queries
 
 Later stages will add cleaning, a local database, analytics views, and a Streamlit dashboard.
 
@@ -58,11 +55,29 @@ python -m src.ingest
 
 This fetches the last 30 days of VIIRS NOAA-20 detections for California (in 5-day chunks) and saves timestamped CSVs in `data/raw/`.
 
-## Run the Cleaning
+## Run the Full Pipeline
 
 ```bash
-python -c "from src.clean import clean_from_raw; df = clean_from_raw(); print(df.head()); print(len(df))"
+python -m src.pipeline
 ```
+
+## Run Steps Individually
+
+**Ingest only:**
+
+```bash
+python -m src.ingest
+```
+
+**Clean & load only** (requires raw CSVs already in `data/raw`):
+
+```bash
+python -m src.load
+```
+
+## Example Queries
+
+See `sql/example_queries.sql` for sample queries you can run against the database.
 
 ## Running Tests
 
@@ -75,12 +90,17 @@ python tests/ -v
 ```
 .
 ├── src/
-│   └── ingest.py          # API client and raw save
-|   └── clean.py           # Cleaning and validation
+│   ├── ingest.py          # API client and raw save
+|   ├── clean.py           # Cleaning and validation
+|   ├── load.py            # Load cleaned data into SQLite
+|   └── pipeline.py        # Runs ingest → clean → load
 ├── tests/
 |   └── test_clean.py      # Unit tests for cleaning
+├── sql/
+|   └── example_queries.sql
 ├── data/
-│   └── raw/               # Timestamped raw CSVs
+│   ├── raw/               # Timestamped raw CSVs
+|   └── firms.db           # SQLite database (created by load.py)
 ├── requirements.txt
 ├── .env.example
 ├──.gitignore
@@ -89,7 +109,6 @@ python tests/ -v
 
 ## Next stages
 
-- Stage 3: Load into SQLite
 - Stage 4: SQL analytics views
 - Stage 5: Streamlit dashboard
 - Stage 6: Scheduling and final documentation
