@@ -11,7 +11,8 @@ ENV/
 src/.env
 
 # Data
-#data/*.csv
+data/raw/*.csv
+data/processed/*.csv
 
 # IDE
 .idea/

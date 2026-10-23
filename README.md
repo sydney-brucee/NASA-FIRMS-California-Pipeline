@@ -4,11 +4,13 @@ A local data engineering pipeline that ingests wildfire detections from the NASA
 
 ## Current stage
 
-**Stage 1: Live ingest**
+**Stage 2: Cleaning and validation =**
 
-- Pulls the last 30 days of detections from the NASA FIRMS Area API
-- Saves each 5-day chunk as a timestamped CSV in `data/raw/`
-- Uses a free MAP_KEY stored in a `.env` file
+- Loads all raw CSVs from `data/raw`
+- Validates required columns and converts types
+- Drops rows with missing critical fields or coordinates outside California
+- Adds a simple intensity bucket based on FRP
+- Includes unit tests
 
 Later stages will add cleaning, a local database, analytics views, and a Streamlit dashboard.
 
@@ -40,13 +42,13 @@ Later stages will add cleaning, a local database, analytics views, and a Streaml
    Do not commit the `.env` file.
 
    **Alternative:** set the key in the terminal for the current session:
-   # Windows PowerShell
+   ### Windows PowerShell
    $env:FIRMS_MAP_KEY = "your_key_here"
 
-   # macOS / Linux
+   ### macOS / Linux
    export FIRMS_MAP_KEY="your_key_here"
 
-## Run the ingest
+## Run the Ingest
 
 From the project root:
 
@@ -56,21 +58,37 @@ python -m src.ingest
 
 This fetches the last 30 days of VIIRS NOAA-20 detections for California (in 5-day chunks) and saves timestamped CSVs in `data/raw/`.
 
-## Project structure (Stage 1)
+## Run the Cleaning
+
+```bash
+python -c "from src.clean import clean_from_raw; df = clean_from_raw(); print(df.head()); print(len(df))"
+```
+
+## Running Tests
+
+```bash
+python tests/ -v
+```
+
+## Project Structure
 
 ```
 .
 ├── src/
 │   └── ingest.py          # API client and raw save
+|   └── clean.py           # Cleaning and validation
+├── tests/
+|   └── test_clean.py      # Unit tests for cleaning
 ├── data/
 │   └── raw/               # Timestamped raw CSVs
 ├── requirements.txt
+├── .env.example
+├──.gitignore
 └── README.md
 ```
 
 ## Next stages
 
-- Stage 2: Cleaning, validation, and unit tests
 - Stage 3: Load into SQLite
 - Stage 4: SQL analytics views
 - Stage 5: Streamlit dashboard
