@@ -4,10 +4,10 @@ A local data engineering pipeline that ingests wildfire detections from the NASA
 
 ## Current stage
 
-**Stage 3: SQLite load**
+**Stage 4: SQL analytics views**
 
-- Cleans raw data and loads it into a local SQLite database (`data/firms.db`)
-- Includes example SQL queries
+- Creates summary views (`daily_summary`, `intensity_summary`, `high_frp`, `satellite_summary`)
+- Views are built automatically when you run the load step
 
 Later stages will add cleaning, a local database, analytics views, and a Streamlit dashboard.
 
@@ -69,7 +69,7 @@ python -m src.pipeline
 python -m src.ingest
 ```
 
-**Clean & load only** (requires raw CSVs already in `data/raw`):
+**Clean & load only** (requires raw CSVs already in `data/raw/`):
 
 ```bash
 python -m src.load
@@ -97,7 +97,8 @@ python tests/ -v
 ├── tests/
 |   └── test_clean.py      # Unit tests for cleaning
 ├── sql/
-|   └── example_queries.sql
+|   ├── example_queries.sql
+|   └── views.sql          # Analytics views
 ├── data/
 │   ├── raw/               # Timestamped raw CSVs
 |   └── firms.db           # SQLite database (created by load.py)
@@ -109,6 +110,5 @@ python tests/ -v
 
 ## Next stages
 
-- Stage 4: SQL analytics views
 - Stage 5: Streamlit dashboard
 - Stage 6: Scheduling and final documentation

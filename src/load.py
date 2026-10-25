@@ -29,6 +29,17 @@ def load_to_sqlite(
     finally:
         conn.close()
 
+def create_views(db_path: str = DEFAULT_DB_PATH, views_path: str = "sql/views.sql") -> None:
+    """Create analytics views from the SQL file."""
+    sql = Path(views_path).read_text(encoding="utf-8")
+    conn = get_connection(db_path)
+    try:
+        conn.executescript(sql)
+        conn.commit()
+    finally:
+        conn.close()
+    print(f"Created views from {views_path}")
+
 def build_database(
         raw_dir: str = "data/raw",
         db_path: str = DEFAULT_DB_PATH,
@@ -40,6 +51,9 @@ def build_database(
 
     print(f"Loading into {db_path}")
     load_to_sqlite(df, db_path=db_path, if_exists="replace")
+
+    print("Creating views...")
+    create_views(db_path=db_path)
     print("Done.")
 
 if __name__ == "__main__":
