@@ -4,10 +4,10 @@ A local data engineering pipeline that ingests wildfire detections from the NASA
 
 ## Current stage
 
-**Stage 4: SQL analytics views**
+**Stage 5: Streamlit dashboard**
 
-- Creates summary views (`daily_summary`, `intensity_summary`, `high_frp`, `satellite_summary`)
-- Views are built automatically when you run the load step
+- Queries the SQLite database
+- Shows summary metrics, an interactive map, and a filterable table
 
 Later stages will add cleaning, a local database, analytics views, and a Streamlit dashboard.
 
@@ -75,6 +75,14 @@ python -m src.ingest
 python -m src.load
 ```
 
+## Run the Dashboard
+
+```bash
+streamlit run app.py
+```
+
+Make sure you have already run the pipeline so `/data/firms.db` exists
+
 ## Example Queries
 
 See `sql/example_queries.sql` for sample queries you can run against the database.
@@ -89,6 +97,7 @@ python tests/ -v
 
 ```
 .
+├── app.py                 # Streamlit dashboard
 ├── src/
 │   ├── ingest.py          # API client and raw save
 |   ├── clean.py           # Cleaning and validation
@@ -108,7 +117,6 @@ python tests/ -v
 └── README.md
 ```
 
-## Next stages
+## Next stage
 
-- Stage 5: Streamlit dashboard
 - Stage 6: Scheduling and final documentation

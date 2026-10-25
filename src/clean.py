@@ -55,10 +55,17 @@ def clean_detections(df: pd.DataFrame) -> pd.DataFrame:
     # Dropping rows with critical missing values
     out = out.dropna(subset=["latitude", "longitude", "acq_date", "frp"])
 
-    # Basic geographic filter (California-ish)
+    # Drop points clearly in Nevada
     out = out[
-        (out["latitude"].between(32.0, 42.5))
-        & (out["longitude"].between(-125.0, -114.0))
+        (out["latitude"].between(32.5, 42.0))
+        & (out["longitude"] >= -124.5)
+        & (out["longitude"] <= -114.5)
+        & ~(
+            (out["latitude"] >= 38.5) & (out["longitude"] > -120.1)
+        )
+        & ~(
+            (out["latitude"] >= 35.0) & (out["latitude"] < 38.5) & (out["longitude"] > -117.5)
+        )
     ]
 
     # Simple intensity bucket based on FRP
